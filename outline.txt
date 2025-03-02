@@ -1,0 +1,12 @@
+
+
+Do you want to save flashcards to a database?
+Would you like to add pronunciation audio to the flashcards?
+Should I generate a Dockerfile to make the app easily deployable?
+
+
+Do you want to display all saved flashcards on the app?
+Should I add search functionality to look up flashcards?
+Would you like to download the flashcards as a CSV file?
+
+eliminate the dots or unwanted non-alphanumeircal letter
