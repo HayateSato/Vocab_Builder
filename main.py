@@ -3,6 +3,7 @@ from transformers import pipeline
 from PIL import Image
 import pytesseract
 import sqlite3
+import re
 
 # Initialize translation pipeline
 translator = pipeline("translation_en_to_de", model="Helsinki-NLP/opus-mt-de-en")
@@ -27,6 +28,9 @@ if uploaded_file is not None:
 
     # OCR with Tesseract
     text = pytesseract.image_to_string(image).strip()
+    text = re.sub(r'[.?]$', '', text)
+    ### anything inside [ ] will be replaced.
+    ### $ means if anything inside [ ] is found at the end
 
     if text:
         st.subheader("Translation")
