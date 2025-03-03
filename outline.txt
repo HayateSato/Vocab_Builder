@@ -1,12 +1,21 @@
 
+NOT YET ------------------------------------------------------------------
+- Would you like to add pronunciation audio to the flashcards?
+- Should I generate a Dockerfile to make the app easily deployable?
+- Should I add search functionality to look up flashcards?
+- Would you like to download the flashcards as a CSV file?
+- the improvement of translation (the translation is sometimes off - it replaces with the first meaning if the text has several meanings)
+- can I add catgegory/tag to my flashcard ( all verbs | verbs used with a preposition etc. )
+- when its a noun, it should add the artikle (der, die, das)
+-------------------------------------------------------------------------
 
-Do you want to save flashcards to a database?
-Would you like to add pronunciation audio to the flashcards?
-Should I generate a Dockerfile to make the app easily deployable?
+DONE
+- Do you want to save flashcards to a database?
+- Do you want to display all saved flashcards on the app?
+- does it work with a sentence? change it to a sentence, and let users choose as which word they want to add to their flashcard
+when there are several meanings available, it should show several options
+- eliminate the dots or unwanted non-alphanumeircal letter
 
 
-Do you want to display all saved flashcards on the app?
-Should I add search functionality to look up flashcards?
-Would you like to download the flashcards as a CSV file?
-
-eliminate the dots or unwanted non-alphanumeircal letter
+DONE but needs improvement
+- does it work for a handwritten words?  -> the accuracy is not hight but it works
