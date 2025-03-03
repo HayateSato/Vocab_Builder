@@ -10,3 +10,10 @@ Should I add search functionality to look up flashcards?
 Would you like to download the flashcards as a CSV file?
 
 eliminate the dots or unwanted non-alphanumeircal letter
+
+can I add catgegory/tag to my flashcard ( all verbs | verbs used with a preposition etc. )
+does it work for a handwritten words?  -> the accuracy is not hight but it works
+does it work with a sentence? change it to a sentence, and let users choose as which word they want to add to their flashcard
+when there are several meanings available, it should show several options
+
+when its a noun, it should add the artikle (der, die, das)
