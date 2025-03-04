@@ -11,8 +11,20 @@ translator = pipeline("translation_en_to_de", model="Helsinki-NLP/opus-mt-de-en"
 # Database setup
 conn = sqlite3.connect("flashcards.db")
 c = conn.cursor()
-c.execute('''CREATE TABLE IF NOT EXISTS flashcards (word TEXT, translation TEXT)''')
+c.execute('''CREATE TABLE IF NOT EXISTS flashcards (word TEXT, translation TEXT, tags TEXT)''')
 conn.commit()
+
+# new_column = "tags"
+#
+# # Check if the column exists
+# c.execute("PRAGMA table_info(flashcards)")
+# columns = [column[1] for column in c.fetchall()]
+#
+# # Add new column if not already present
+# if new_column not in columns:
+#     c.execute(f"ALTER TABLE flashcards ADD COLUMN {new_column} TEXT")
+#     conn.commit()
+
 
 # Streamlit UI
 st.title("Flashcard Maker 📚")
@@ -28,38 +40,24 @@ if uploaded_file is not None:
 
     # OCR with Tesseract
     text = pytesseract.image_to_string(image).strip()
-    text = re.sub(r'[.?]$', '', text)
+    text = re.sub(r'[.,?@]$', '', text)
     ### anything inside [ ] will be replaced.
     ### $ means if anything inside [ ] is found at the end
 
     if text:
         st.subheader("Translation")
         try:
-            # Translate the word or sentence
             result = translator(text)
             translation = result[0]['translation_text']
+            st.markdown(f"**Original:** {text}\n\n**Meaning:** {translation}")
 
-            st.markdown(
-                f"""
-                - **Original:** {text}
-                - **Meaning:** {translation}
-                """
-            )
+            tags = st.text_input("Add Tags (comma-separated, e.g., noun, sports)")
 
-            # Flashcard Preview
-            st.subheader("Flashcard")
-            words_list = text.split()
-            selected_word = st.selectbox("Word you want to save is:", words_list)
-            # st.write(f"Meaning: {translation}")
-
-            # Save to Database
             if st.button("Save Flashcard"):
-                c.execute("INSERT INTO flashcards (word, translation) VALUES (?, ?)", (selected_word, translation))
+                c.execute("INSERT INTO flashcards (word, translation, tags) VALUES (?, ?, ?)", (text, translation, tags))
                 conn.commit()
                 st.success("Flashcard saved successfully!")
-
         except Exception as e:
             st.error(f"Translation failed: {e}")
-
     else:
-        st.error("No text detected. Please try again with a clearer image.")
+        st.error("No text detected.")
