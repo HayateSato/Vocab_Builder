@@ -1,7 +1,19 @@
 import streamlit as st
 import sqlite3
 
-st.title("📄 Saved Flashcards")
+
+# st.title("📄 Saved Flashcards")
+#
+# st.write("Welcome to the Flashcards Page!")
+#
+# if st.button("Go back and create your flashcard"):
+#     st.session_state.page = "main"
+#     # st.experimental_rerun()
+#
+# if st.button("Go to Home"):
+#     st.session_state.page = "Home"
+#     # st.experimental_rerun()
+
 
 # Connect to the database
 conn = sqlite3.connect("flashcards.db")
@@ -13,6 +25,35 @@ rows = c.fetchall()
 
 if rows:
     st.table({"Word": [row[0] for row in rows], "Translation": [row[1] for row in rows], "Tags": [row[2] for row in rows]})
+
+    # Search Bar ------------------------------------------------------------------------------
+    search_query = st.text_input("Search Flashcards", "")
+
+    if search_query:
+        # Query the database to search for matching words or translations
+        c.execute('''
+        SELECT * 
+        FROM flashcards
+        WHERE word LIKE ? OR translation LIKE ?;
+        ''', (f"%{search_query}%", f"%{search_query}%"))
+
+        search_results = c.fetchall()
+        conn.commit()
+
+        if search_results:
+            st.table({
+                "Word": [row[0] for row in search_results],
+                "Translation": [row[1] for row in search_results],
+                "Tags": [row[2] for row in search_results]
+            })
+            st.success(f"Found {len(search_results)} flashcard(s) matching '{search_query}'.")
+        else:
+            st.warning("No matching flashcards found.")
+
+
+
+
+
 
     # Filter -----------------------------------------------------
     # Fetch all tags
@@ -36,7 +77,10 @@ if rows:
     # Remove duplicates, convert to lowercase, and sort alphabetically
     selectable_tags = sorted(set(tag.lower() for tag in selectable_tags))
 
-    # Selectbox for filtering
+
+
+
+    # Selectbox for filtering -----------------------------------------------------------------
     Selected_tags = st.selectbox("Filter your cards", selectable_tags)
 
     if Selected_tags != " ":
