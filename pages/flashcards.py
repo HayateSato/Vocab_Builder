@@ -8,11 +8,11 @@ conn = sqlite3.connect("flashcards.db")
 c = conn.cursor()
 
 # Fetch all flashcards
-c.execute("SELECT rowid, word, tags translation FROM flashcards")
+c.execute("SELECT rowid, word, tags, translation FROM flashcards")
 rows = c.fetchall()
 
 if rows:
-    st.table({"Word": [row[0] for row in rows], "Translation": [row[1] for row in rows], "Tags": [row[2] for row in rows]})
+    st.table({"Word": [row[1] for row in rows], "Translation": [row[3] for row in rows], "Tags": [row[2] for row in rows]})
 
     # Filter -----------------------------------------------------
     # Fetch all tags
@@ -37,15 +37,15 @@ if rows:
     selectable_tags = sorted(set(tag.lower() for tag in selectable_tags))
 
     # Selectbox for filtering
-    Selected_tags = st.selectbox("Filter your cards", selectable_tags)
+    selected_tags = st.selectbox("Filter your cards", selectable_tags)
 
-    if Selected_tags != " ":
+    if selected_tags != " ":
         # Execute query with LIKE operator to filter tags
         c.execute('''
         SELECT * 
         FROM flashcards
         WHERE tags LIKE ?;
-        ''', (f"%{Selected_tags}%",))
+        ''', (f"%{selected_tags}%",))
         rows = c.fetchall()  # Fetch the filtered results
         conn.commit()
 
