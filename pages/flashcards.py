@@ -12,7 +12,7 @@ c.execute("SELECT rowid, word, tags, translation FROM flashcards")
 rows = c.fetchall()
 
 if rows:
-    st.table({"Word": [row[1] for row in rows], "Translation": [row[3] for row in rows], "Tags": [row[2] for row in rows]})
+    st.table({"Word": [row[1] for row in rows], "Translation": [row[3] for row in rows], "Sentence":[row[2] for row in rows], "Tags": [row[2] for row in rows]})
 
     # Filter -----------------------------------------------------
     # Fetch all tags

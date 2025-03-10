@@ -2,7 +2,7 @@ import streamlit as st
 import sqlite3
 
 # Function to fetch a random word
-def get_random_word():
+def Get_random_word():
     conn = sqlite3.connect("flashcards.db")
     c = conn.cursor()
     c.execute('''
@@ -17,7 +17,7 @@ def get_random_word():
 
 # Initialize session state if not set
 if "word_data" not in st.session_state:
-    st.session_state.word_data = get_random_word()
+    st.session_state.word_data = Get_random_word()
     st.session_state.show_answer = False  # Track if answer should be shown
 
 # Display the word
@@ -39,7 +39,7 @@ if st.session_state.show_answer and st.session_state.word_data:
 
 # Shuffle Again button
 if st.button("Shuffle Again"):
-    st.session_state.word_data = get_random_word()
+    st.session_state.word_data = Get_random_word()
     st.session_state.show_answer = False  # Reset answer visibility
     st.rerun()
 

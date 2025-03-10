@@ -13,19 +13,6 @@ translator = pipeline("translation_en_to_de", model="Helsinki-NLP/opus-mt-de-en"
 # Database setup
 conn = sqlite3.connect("flashcards.db")
 c = conn.cursor()
-c.execute('''CREATE TABLE IF NOT EXISTS flashcards (word TEXT, translation TEXT, tags TEXT)''')
-conn.commit()
-
-# new_column = "tags"
-#
-# # Check if the column exists
-# c.execute("PRAGMA table_info(flashcards)")
-# columns = [column[1] for column in c.fetchall()]
-#
-# # Add new column if not already present
-# if new_column not in columns:
-#     c.execute(f"ALTER TABLE flashcards ADD COLUMN {new_column} TEXT")
-#     conn.commit()
 
 
 # Streamlit UI
@@ -42,15 +29,66 @@ if uploaded_file is not None:
 
     # OCR with Tesseract
     text = pytesseract.image_to_string(image).strip()
-    text = re.sub(r'[.,?@]$', '', text)
+    st.write(f"after parsing: {text}")
+    text = re.sub(r'[.?@]$', '', text)
     ### anything inside [ ] will be replaced.
     ### $ means if anything inside [ ] is found at the end
 
     if text:
         st.subheader("Translation")
         try:
+
+            # if the input is a sentence
+            if len(text) > 1:
+                sentence = text
+                # text = re.sub(r'[.,?@]$', '', text)
+                # parsed_word = input_words.append(text.split())
+                parsed_word = set(text.split())
+                parsed_word = [re.sub(r'[.,?@]$', '') for w in parsed_word]
+                selected_word = st.selectbox("Which word do you want to remember?", parsed_word)
+
+                tags = st.text_input("Add Tags (comma-separated, e.g., noun, sports)")
+
+                results = translator(sentence)
+                translations = [result['translation_text'] for result in results]
+                # st.write(f"temporal translation: {translations}")
+                for translation in enumerate(translations):
+                    st.markdown(f"**Translation:** {translation} **")
+
+                tags = st.text_input("Add Tags (comma-separated, e.g., noun, sports)")
+
+                if st.button("Save Flashcard"):
+                    c.execute("INSERT INTO flashcards (word, translation, sentence, tags) VALUES (?, ?, ?, ?)",
+                              (selected_word, ", ".join(translations), sentence, tags))
+                    conn.commit()
+                    st.success("Flashcard saved successfully!")
+
+            # if the input is one word
+            else:
+                tags = st.text_input("Add Tags (comma-separated, e.g., noun, sports)")
+
+                results = translator(text)
+                translations = [result['translation_text'] for result in results]
+                st.write(f"temporal translation: {translations}")
+                for i, translation in enumerate(translations):
+                    st.markdown(f"**Translation {i + 1}:** {translation}")
+
+                tags = st.text_input("Add Tags (comma-separated, e.g., noun, sports)")
+
+                if st.button("Save Flashcard"):
+                    c.execute("INSERT INTO flashcards (word, translation, tags) VALUES (?, ?, ?)",
+                              (text, ", ".join(translations), tags))
+                    conn.commit()
+                    st.success("Flashcard saved successfully!")
+        except Exception as e:
+            st.error(f"Translation failed: {e}")
+
+
+##############################
+
             results = translator(text)
             translations = [result['translation_text'] for result in results]
+            st.write(f"temporal translation: {translations}")
             for i, translation in enumerate(translations):
                 st.markdown(f"**Translation {i + 1}:** {translation}")
 
