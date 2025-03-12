@@ -8,11 +8,11 @@ conn = sqlite3.connect("flashcards.db")
 c = conn.cursor()
 
 # Fetch all flashcards
-c.execute("SELECT rowid, word, tags, translation FROM flashcards")
+c.execute("SELECT word, sentence, translation, tags FROM flashcards")
 rows = c.fetchall()
 
 if rows:
-    st.table({"Word": [row[1] for row in rows], "Translation": [row[3] for row in rows], "Sentence":[row[2] for row in rows], "Tags": [row[2] for row in rows]})
+    st.table({"Word": [row[0] for row in rows], "Sentence": [row[1] for row in rows], "Translation":[row[2] for row in rows], "Tags": [row[3] for row in rows]})
 
     # Filter -----------------------------------------------------
     # Fetch all tags
@@ -50,28 +50,28 @@ if rows:
         conn.commit()
 
         if rows:
-            st.table({"Word": [row[0] for row in rows], "Translation": [row[1] for row in rows],
-                      "Tags": [row[2] for row in rows]})
+            st.table({"Word": [row[2] for row in rows],  "Sentence": [row[0] for row in rows], "Translation": [row[1] for row in rows],
+                      "Tags": [row[3] for row in rows]})
             st.success("The result of filtered flashcards cabinets!")
         else:
             st.warning("No flashcards found for the selected tag.")
 
     # Duplicate --------------------------------------------------
-    if st.button("Delete Duplicates"):
-        try:
-            # Find duplicates and keep only one
-            c.execute('''
-                DELETE FROM flashcards
-                WHERE rowid NOT IN (
-                    SELECT MIN(rowid)
-                    FROM flashcards
-                    GROUP BY word, translation
-                )
-            ''')
-            conn.commit()
-            st.success("Duplicate flashcards deleted successfully!")
-            # st.experimental_rerun()  # Refresh page after deletion
-        except Exception as e:
-            st.error(f"Failed to delete duplicates: {e}")
+    # if st.button("Delete Duplicates"):
+    #     try:
+    #         # Find duplicates and keep only one
+    #         c.execute('''
+    #             DELETE FROM flashcards
+    #             WHERE rowid NOT IN (
+    #                 SELECT MIN(rowid)
+    #                 FROM flashcards
+    #                 GROUP BY word, translation
+    #             )
+    #         ''')
+    #         conn.commit()
+    #         st.success("Duplicate flashcards deleted successfully!")
+    #         # st.experimental_rerun()  # Refresh page after deletion
+    #     except Exception as e:
+    #         st.error(f"Failed to delete duplicates: {e}")
 else:
     st.info("No flashcards saved yet.")

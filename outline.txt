@@ -1,11 +1,19 @@
+--FLASHCARD.DB STRUCTURE ---------------------------------------------------
+0. sentence - TEXT
+1. translation - TEXT
+2. word - CHAR(100)
+3. Tags - TEXT
+
+
+
 
 NOT YET ------------------------------------------------------------------
 - Would you like to add pronunciation audio to the flashcards?
 - Should I generate a Dockerfile to make the app easily deployable?
-- Should I add search functionality to look up flashcards?
+
 - Would you like to download the flashcards as a CSV file?
 - the improvement of translation (the translation is sometimes off - it replaces with the first meaning if the text has several meanings)
-- can I add catgegory/tag to my flashcard ( all verbs | verbs used with a preposition etc. )
+
 - when its a noun, it should add the artikle (der, die, das)
 -------------------------------------------------------------------------
 
@@ -15,6 +23,8 @@ DONE
 - does it work with a sentence? change it to a sentence, and let users choose as which word they want to add to their flashcard
 when there are several meanings available, it should show several options
 - eliminate the dots or unwanted non-alphanumeircal letter
+- can I add catgegory/tag to my flashcard ( all verbs | verbs used with a preposition etc. )
+- Should I add search functionality to look up flashcards?
 
 
 DONE but needs improvement

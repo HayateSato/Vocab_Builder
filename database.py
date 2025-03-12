@@ -1,10 +1,10 @@
 import sqlite3
-
-
-# Database setup
 conn = sqlite3.connect("flashcards.db")
 c = conn.cursor()
-# c.execute('''CREATE TABLE IF NOT EXISTS flashcards (word TEXT, translation TEXT, tags TEXT)''')
+
+
+#-- Creating a new db file
+# c.execute('''CREATE TABLE IF NOT EXISTS flashcards (sentence TEXT, translation TEXT, word CHAR(100), tags TEXT)''')
 # conn.commit()
 
 #-- adding a new column
