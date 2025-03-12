@@ -1,5 +1,6 @@
 import streamlit as st
 import sqlite3
+import pandas as pd
 
 st.title("📄 Saved Flashcards")
 
@@ -52,9 +53,30 @@ if rows:
         if rows:
             st.table({"Word": [row[2] for row in rows],  "Sentence": [row[0] for row in rows], "Translation": [row[1] for row in rows],
                       "Tags": [row[3] for row in rows]})
-            st.success("The result of filtered flashcards cabinets!")
+            # st.success("The result of filtered flashcards cabinets!")
         else:
             st.warning("No flashcards found for the selected tag.")
+
+# manual search -------------------------------------------------------------------------------
+    st.subheader("Search Flashcards")
+    search_term = st.text_input("Enter word to search:")
+    if st.button("Search"):
+        c.execute("SELECT word, sentence, translation FROM flashcards WHERE word LIKE ?", (f"%{search_term}%",))
+        results = c.fetchall()
+        if results:
+            if results:
+                df = pd.DataFrame(results, columns=["Word", "Sentence", "Translation"])
+                st.table(df)
+        else:
+            st.error("No matching flashcards found.")
+
+# Delete Functionality  --------------------------------------------------------
+st.subheader("Delete Flashcard")
+delete_word = st.text_input("Enter word to delete:")
+if st.button("Delete"):
+    c.execute("DELETE FROM flashcards WHERE word = ?", (delete_word,))
+    conn.commit()
+    st.success(f"Flashcard for '{delete_word}' deleted successfully!")
 
     # Duplicate --------------------------------------------------
     # if st.button("Delete Duplicates"):
