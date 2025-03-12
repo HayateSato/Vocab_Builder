@@ -1,59 +1,19 @@
 import streamlit as st
 import sqlite3
+import pandas as pd
 
-
-# st.title("📄 Saved Flashcards")
-#
-# st.write("Welcome to the Flashcards Page!")
-#
-# if st.button("Go back and create your flashcard"):
-#     st.session_state.page = "main"
-#     # st.experimental_rerun()
-#
-# if st.button("Go to Home"):
-#     st.session_state.page = "Home"
-#     # st.experimental_rerun()
-
+st.title("📄 Saved Flashcards")
 
 # Connect to the database
 conn = sqlite3.connect("flashcards.db")
 c = conn.cursor()
 
 # Fetch all flashcards
-c.execute("SELECT rowid, word, tags translation FROM flashcards")
+c.execute("SELECT word, sentence, translation, tags FROM flashcards")
 rows = c.fetchall()
 
 if rows:
-    st.table({"Word": [row[0] for row in rows], "Translation": [row[1] for row in rows], "Tags": [row[2] for row in rows]})
-
-    # Search Bar ------------------------------------------------------------------------------
-    search_query = st.text_input("Search Flashcards", "")
-
-    if search_query:
-        # Query the database to search for matching words or translations
-        c.execute('''
-        SELECT * 
-        FROM flashcards
-        WHERE word LIKE ? OR translation LIKE ?;
-        ''', (f"%{search_query}%", f"%{search_query}%"))
-
-        search_results = c.fetchall()
-        conn.commit()
-
-        if search_results:
-            st.table({
-                "Word": [row[0] for row in search_results],
-                "Translation": [row[1] for row in search_results],
-                "Tags": [row[2] for row in search_results]
-            })
-            st.success(f"Found {len(search_results)} flashcard(s) matching '{search_query}'.")
-        else:
-            st.warning("No matching flashcards found.")
-
-
-
-
-
+    st.table({"Word": [row[0] for row in rows], "Sentence": [row[1] for row in rows], "Translation":[row[2] for row in rows], "Tags": [row[3] for row in rows]})
 
     # Filter -----------------------------------------------------
     # Fetch all tags
@@ -77,45 +37,63 @@ if rows:
     # Remove duplicates, convert to lowercase, and sort alphabetically
     selectable_tags = sorted(set(tag.lower() for tag in selectable_tags))
 
+    # Selectbox for filtering
+    selected_tags = st.selectbox("Filter your cards", selectable_tags)
 
-
-
-    # Selectbox for filtering -----------------------------------------------------------------
-    Selected_tags = st.selectbox("Filter your cards", selectable_tags)
-
-    if Selected_tags != " ":
+    if selected_tags != " ":
         # Execute query with LIKE operator to filter tags
         c.execute('''
         SELECT * 
         FROM flashcards
         WHERE tags LIKE ?;
-        ''', (f"%{Selected_tags}%",))
+        ''', (f"%{selected_tags}%",))
         rows = c.fetchall()  # Fetch the filtered results
         conn.commit()
 
         if rows:
-            st.table({"Word": [row[0] for row in rows], "Translation": [row[1] for row in rows],
-                      "Tags": [row[2] for row in rows]})
-            st.success("The result of filtered flashcards cabinets!")
+            st.table({"Word": [row[2] for row in rows],  "Sentence": [row[0] for row in rows], "Translation": [row[1] for row in rows],
+                      "Tags": [row[3] for row in rows]})
+            # st.success("The result of filtered flashcards cabinets!")
         else:
             st.warning("No flashcards found for the selected tag.")
 
+# manual search -------------------------------------------------------------------------------
+    st.subheader("Search Flashcards")
+    search_term = st.text_input("Enter word to search:")
+    if st.button("Search"):
+        c.execute("SELECT word, sentence, translation FROM flashcards WHERE word LIKE ?", (f"%{search_term}%",))
+        results = c.fetchall()
+        if results:
+            if results:
+                df = pd.DataFrame(results, columns=["Word", "Sentence", "Translation"])
+                st.table(df)
+        else:
+            st.error("No matching flashcards found.")
+
+# Delete Functionality  --------------------------------------------------------
+st.subheader("Delete Flashcard")
+delete_word = st.text_input("Enter word to delete:")
+if st.button("Delete"):
+    c.execute("DELETE FROM flashcards WHERE word = ?", (delete_word,))
+    conn.commit()
+    st.success(f"Flashcard for '{delete_word}' deleted successfully!")
+
     # Duplicate --------------------------------------------------
-    if st.button("Delete Duplicates"):
-        try:
-            # Find duplicates and keep only one
-            c.execute('''
-                DELETE FROM flashcards
-                WHERE rowid NOT IN (
-                    SELECT MIN(rowid)
-                    FROM flashcards
-                    GROUP BY word, translation
-                )
-            ''')
-            conn.commit()
-            st.success("Duplicate flashcards deleted successfully!")
-            # st.experimental_rerun()  # Refresh page after deletion
-        except Exception as e:
-            st.error(f"Failed to delete duplicates: {e}")
+    # if st.button("Delete Duplicates"):
+    #     try:
+    #         # Find duplicates and keep only one
+    #         c.execute('''
+    #             DELETE FROM flashcards
+    #             WHERE rowid NOT IN (
+    #                 SELECT MIN(rowid)
+    #                 FROM flashcards
+    #                 GROUP BY word, translation
+    #             )
+    #         ''')
+    #         conn.commit()
+    #         st.success("Duplicate flashcards deleted successfully!")
+    #         # st.experimental_rerun()  # Refresh page after deletion
+    #     except Exception as e:
+    #         st.error(f"Failed to delete duplicates: {e}")
 else:
     st.info("No flashcards saved yet.")
