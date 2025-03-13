@@ -58,6 +58,7 @@ if rows:
             st.warning("No flashcards found for the selected tag.")
 
 # manual search -------------------------------------------------------------------------------
+    st.write("-------------------------------------------------------")
     st.subheader("Search Flashcards")
     search_term = st.text_input("Enter word to search:")
     if st.button("Search"):
@@ -69,8 +70,11 @@ if rows:
                 st.table(df)
         else:
             st.error("No matching flashcards found.")
+else:
+    st.info("No flashcards saved yet.")
 
 # Delete Functionality  --------------------------------------------------------
+st.write("-------------------------------------------------------")
 st.subheader("Delete Flashcard")
 delete_word = st.text_input("Enter word to delete:")
 if st.button("Delete"):
@@ -95,5 +99,4 @@ if st.button("Delete"):
     #         # st.experimental_rerun()  # Refresh page after deletion
     #     except Exception as e:
     #         st.error(f"Failed to delete duplicates: {e}")
-else:
-    st.info("No flashcards saved yet.")
+

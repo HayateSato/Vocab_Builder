@@ -22,9 +22,9 @@ if "word_data" not in st.session_state:
 
 # Display the word
 if st.session_state.word_data:
+    st.success("Here is a randomly selected word")
     st.table({"Word": [st.session_state.word_data[0]]})
-    st.success("Here is a randomly selected word!")
-    if st.button("Show it in the sentence"):
+    if st.button("Show it in sentence"):
         st.table({"Sentence": [st.session_state.word_data[1]]})
 else:
     st.warning("No flashcards found.")
@@ -39,7 +39,8 @@ if st.session_state.show_answer and st.session_state.word_data:
     # st.success("Here is the answer to the randomly selected word!")
 
 # Shuffle Again button
-if st.button("Shuffle Again"):
+st.write("-------------------------------------------------------")
+if st.button("Shuffle"):
     st.session_state.word_data = Get_random_word()
     st.session_state.show_answer = False  # Reset answer visibility
     st.rerun()
